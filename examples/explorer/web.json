@@ -1,0 +1,80 @@
+{
+  "env": "development",
+  "host" : "localhost",
+  "port" : 8080,
+  "ssl" : false,
+  "timezone": "UTC",
+  
+  "system"  : {
+  	"name" : "TodoExample",
+  	"url"  : "http://localhost:8080",
+  	"company" : {
+  		"name" : "hudaokeji",
+  		"address" : "nanchang",
+  		"hp"      : "http://hudaokeji.com"
+  	}
+  },
+
+  "middlewares" :{
+      "http": {
+         "csrf" : false
+      }
+  },
+
+  "router" : {
+     "statics" : {
+       "paths" :[
+         { "mapping": "","dir" : "./client"}
+       ]
+     },
+     "custom"  : "./router"
+  },
+
+  "views" : {
+      "haml": {
+          "extname": "haml",
+          "viewsDir": ["./views"]
+      }
+  },
+
+
+  "tree": {
+    "home" : "./",
+    "maxDepth": 10 ,
+    "concurrency": 100 ,
+    "cache": true ,
+    "cacheTTL": 86400 
+  },
+  "pagination": {
+   "limit":  100
+  },
+  "search": {
+    "method": "native",
+    "command": "pt --nocolor --nogroup -l -i '${search}' ." ,
+    "maxDepth": 10,
+    "concurrency": 100,
+    "maxScore": 0.85
+  },
+  "remove": {
+    "method": "mv",
+    "path": "./trash"
+  },
+  "archive": {
+    "path": "./tmp"
+  },
+  "upload": {
+    "path": "./upload",
+    "concurrency": 10,
+    "maxSize": "50mb",
+    "maxCount": 10 
+  },
+
+  "plugin_path" : "./plugins",
+  "plugins" : {
+    "upload": {},
+    "archive": {}
+ 
+  },
+  "cache" : "memory"
+
+}
