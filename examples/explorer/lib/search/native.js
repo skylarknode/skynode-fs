@@ -7,7 +7,7 @@ var Promise = require('bluebird')
 var natural = require('natural')
 var isGlob = require('is-glob')
 var sanitize = require('../utils.js').sanitize
-var tree = require('../tree.js')
+//var tree = require('../tree.js')
 var Filters = require('./filters.js')
 
 var debug = require('debug')('explorer:nativeSearch')
@@ -89,7 +89,7 @@ function nativeSearch(searchOptions) {
    * @param object options
    * @return Promise (resolving an array of matching paths)
    */
-  return function search(search, path, options) {
+  return function search(wfs,search, path, options) {
     debug('search %s in path %s (root: %s)', search, path, options.root)
 
     if(!(typeof search == 'string'))
@@ -114,7 +114,7 @@ function nativeSearch(searchOptions) {
 
     options = util._extend(options, searchOptions)
 
-    return tree(path, options)
+    return wfs.list(path, options)
   }
 }
 

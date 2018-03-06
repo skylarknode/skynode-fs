@@ -18,7 +18,8 @@ var debug = require('debug')('explorer:middlewares:prepareTree')
 function prepareTree(app) {
   var config = app.get('config');
   var cache = app.get('cache');
-  var homePath = p.join(app.get("root"),config.tree.home);
+  var homePath = "/",
+      homeRealPath = app.get("home");
 
   return function(req, res, next) {
     //should be an app.param
@@ -49,8 +50,8 @@ function prepareTree(app) {
       sort: req.query.sort || '',
       order: req.query.order || '',
       page: req.query.page,
-      root: p.resolve(homePath),
-      path: utils.higherPath(homePath, req.query.path),
+      root: homePath, //p.resolve(homePath),
+      path: req.query.path, //utils.higherPath(homePath, req.query.path),
       parent: utils.higherPath(homePath, p.resolve(req.query.path, '..')),
       buildUrl: utils.buildUrl,
       extend: utils.extend,
@@ -78,7 +79,7 @@ function prepareTree(app) {
 
       var k = e == 'remove' ? 'trash' : e
 
-        opts[e].path = p.resolve(homePath, k)
+        opts[e].path = p.resolve(homeRealPath, k)
     })
 
 

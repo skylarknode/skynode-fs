@@ -6,7 +6,6 @@ var util = require('util')
 var existsSync = require('./utils.js').existsSync
 var middlewares = require('../middlewares')
 var HTTPError = require('./HTTPError.js')
-var tree = require('./tree.js')
 
 var debug = require('debug')('explorer:plugins')
 
@@ -69,7 +68,7 @@ function registerPluginsRoutes(app) {
       plugins[name].router(router, {
         prepareTree: middlewares.prepareTree(app),
         HTTPError: HTTPError,
-        tree: tree,
+//        tree: tree,
         cache: cache,
         sanitizeCheckboxes : middlewares.sanitizeCheckboxes
       }, config);

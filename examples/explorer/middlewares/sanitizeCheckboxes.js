@@ -13,6 +13,7 @@ function sanitizeCheckboxes(req, res, next) {
   if(typeof req.body.path == 'string')
     req.body.path = [req.body.path]
 
+/*    
   //validating paths
   for(let i in req.body.path) {
     var path = utils.higherPath(req.options.root, req.body.path[i]) 
@@ -33,7 +34,8 @@ function sanitizeCheckboxes(req, res, next) {
   }
 
   req.options.directories = directories
-  req.options.paths = paths
+*/
+  req.options.paths = req.body.path;
 
   return next()
 }

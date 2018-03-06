@@ -8,13 +8,19 @@ var routes = require('./routes')
 var middlewares = require('./middlewares')
 var parallelMiddlewares = require('./lib/utils.js').parallelMiddlewares
 
-var fs = Promise.promisifyAll(require('fs'))
-var debug = require('debug')('explorer:server')
+var fs = Promise.promisifyAll(require('fs'));
+var debug = require('debug')('explorer:server');
+
+var webfs = require('../../lib/webfs');
 
 module.exports = function(app) {
   var config = app.get('config');
 
   config.upload.path = p.join(app.get("root"),config.upload.path);
+
+  var homePath = p.join(app.get("root"),config.tree.home);
+  app.set("home",homePath);
+  app.set("wfs",webfs.createWebFS(homePath));
 
   let cache = require('./lib/cache')({
     cache : "memory"

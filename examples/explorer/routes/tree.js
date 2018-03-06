@@ -5,7 +5,6 @@ var p = require('path')
 var moment = require('moment')
 var utils = require('../lib/utils.js')
 var HTTPError = require('../lib/HTTPError.js')
-var tree = require('../lib/tree.js')
 var searchMethod = require('../lib/search')
 var middlewares = require('../middlewares')
 
@@ -19,14 +18,13 @@ var fs = Promise.promisifyAll(require('fs'))
  * @apiParam {string} path
  */
 function download(req, res, next) {
-  var path = utils.higherPath(req.options.root, req.query.path)
+  var path =  req.query.path;
 
-  if(path === req.options.root) {
-    return next(new HTTPError('Unauthorized', 401))
-  }
+  var wfs = req.app.get("wfs");
 
-  return Promise.join(fs.statAsync(path), utils.pathInfo(path), function(stat, info) {
-    if(stat.isDirectory()) {
+
+  return wfs.info(path).then( function(info) {
+    if(info.directory) {
       return next(new HTTPError('Downloading a directory is not possible', 400)) 
     }
     
@@ -41,7 +39,7 @@ function download(req, res, next) {
         lastModified: stat.mtime
       }
 
-      return res.sendFile(p.relative(options.root, path), options, function(err) {
+      return res.sendFile(wfs.toRealPath(path), options, function(err) {
         if(err) {
           return utils.handleSystemError(next)(err)
         } 
@@ -50,7 +48,7 @@ function download(req, res, next) {
 
     debug('Download %o', info)
 
-    return res.download(path, p.basename(path), function(err) {
+    return res.download(wfs.toRealPath(path), p.basename(path), function(err) {
       if(err) {
         return utils.handleSystemError(next)(err)
       } 
@@ -76,7 +74,9 @@ function getTree(req, res, next) {
 
   debug('Sort by %s %s', req.options.sort, req.options.order)
 
-  tree(req.options.path, req.options)
+  var wfs = req.app.get("wfs");
+  
+  wfs.list(req.options.path, req.options)
   .then(function(e) {
     res.locals = utils.extend(res.locals, e)
     return next()
@@ -143,7 +143,7 @@ function search(req, res, next) {
 
   var method = searchMethod(config.search.method, config.search)
   
-  return method(req.options.search, req.options.path, req.options)
+  return method(req.app.get("wfs"),req.options.search, req.options.path, req.options)
   .then(function(data) {
     if(config.search.method == 'native') {
       return data 

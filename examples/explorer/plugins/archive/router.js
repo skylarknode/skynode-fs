@@ -3,7 +3,6 @@
 var fs = require('fs')
 var p = require('path')
 var moment = require('moment')
-var job = require('./job.js')
 
 var debug = require('debug')('explorer:routes:archive')
 
@@ -38,8 +37,11 @@ var Archive = function(router, utils) {
 
     data.stream = res
 
-    var archive = new job(null)
-    return archive.create(data, req.user, req.options)
+    //set the archive name
+    data.stream.attachment(data.name + '.zip')
+
+    var wfs = req.app.get("wfs");
+    wfs.archive(data.paths,data.stream,{});
   })
 
   /**
@@ -59,8 +61,10 @@ var Archive = function(router, utils) {
       return next(new utils.HTTPError('No files to compress', 400)) 
     }
 
-    data.stream = data.temp
-    utils.interactor.send('call', 'archive.create', data, req.user, req.options)
+
+    var wfs = req.app.get("wfs");
+    wfs.archive(data.paths,data.tmp,{});
+
     return res.handle('back', {info: 'Archive created'}, 201)
   })
 
