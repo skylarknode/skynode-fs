@@ -11,7 +11,7 @@ var parallelMiddlewares = require('./lib/utils.js').parallelMiddlewares
 var fs = Promise.promisifyAll(require('fs'));
 var debug = require('debug')('explorer:server');
 
-var webfs = require('../../lib/webfs');
+var webfs = require('../../webfs');
 
 module.exports = function(app) {
   var config = app.get('config');

@@ -1,5 +1,5 @@
 'use strict';
-var utils = require('../lib/utils.js')
+var utils = require('../utils.js')
 var fs = require('fs')
 
 /**
