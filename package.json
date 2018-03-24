@@ -8,14 +8,13 @@
   ],
   "name": "skynode-fs",
   "description": "skynode web file system",
-  "main": "./lib/app",
+  "main": "./lib/index",
   "version": "0.9.0",
   "preferGlobal": "true",
   "homepage": "",
-  "bin": "./bin/jsbin",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jsbin/jsbin.git"
+    "url": "git://github.com/skylarknode/skynode-fs.git"
   },
   "scripts": {
     "explorer": "./node_modules/.bin/snodesrv -c ./examples/explorer/web.json"
@@ -73,7 +72,7 @@
   "engines": {
     "node": "7"
   },
-  "license": "commercial",
+  "license": "MIT",
   "resolutions": {
     "async": "1.5.2",
     "commander": "2.9.0",
