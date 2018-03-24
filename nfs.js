@@ -12,6 +12,12 @@ var async = require('async');
 var mime = require('mime');
 var moment = require('moment');
 var crypto = require('crypto');
+const mkdirp = require('mkdirp');
+const rmdirp = require('rmdirp');
+
+var MODE_0666 = parseInt('0666', 8);
+var MODE_0755 = parseInt('0755', 8);
+
 
 var rimraf = Promise.promisify(require('rimraf'));
 
@@ -614,6 +620,81 @@ function quoat(path) {
   });
 }
 
+/**
+ * Mkdir -p.
+ *
+ */
+function mkdir(path,  opts ) {
+  opts = opts || MODE_0755;
+  return new Promise(function (resolve, reject) {
+    mkdirp(path, opts, function(err,result) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+    });
+  });
+}
+
+function mkdirSync(path,  opts ) {
+  opts = opts || MODE_0755;
+  return mkdirp.sync(path, opts);
+}
+
+/**
+ * Rmdir -p.
+ *
+ */
+function rmdir(path ) {
+  return new Promise(function (resolve, reject) {
+    rmdirp(path, function(err,result) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+    });
+  });
+}
+
+function rmdirSync(path ) {
+  return rmdirp.sync(path);
+}
+
+/**
+ * Check if the given directory `path` is empty.
+ */
+
+function checkEmpty(path, fn) {
+  return new Promise(function (resolve, reject) {
+    fs.readdir(path, function(err, files) {
+        if (err && err.code !== 'ENOENT') {
+          reject(err);
+        } else {
+          resolve(!files || !files.length);
+        }
+    })
+  });
+}
+
+
+function write(path, str, mode) {
+    return fs.writeFileSync(path, str, { mode: mode || MODE_0666 })
+}
+
+function writeSync(path, str, mode) {
+    return fs.writeFileSync(path, str, { mode: mode || MODE_0666 })
+}
+
+
+function read(path) {
+    return fs.readFileAsync(path, 'utf8');
+}
+function readSync(path) {
+    return fs.readFileSync(path, 'utf8');
+}
+
 module.exports = {
   noDotFiles: noDotFiles,
   higherPath: higherPath,
@@ -646,12 +727,25 @@ module.exports = {
   gracefulCatch : gracefulCatch,
   paths : paths,
   
-  quoat : quoat,
   
   readExif : readExif,
   recursiveReaddir : recursiveReaddir,
 
 
+  quoat : quoat,
+
   stat : stat,
-  statSync : statSync
+  statSync : statSync,
+
+  mkdir: mkdir,
+  mkdirSync: mkdirSync,
+
+  rmdir: rmdir,
+  rmdirSync: rmdirSync,
+
+  read: read,
+  readSync: readSync,
+
+  write: write,
+  writeSync: writeSync
 }

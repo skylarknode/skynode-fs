@@ -2,11 +2,9 @@
 var p = require('path')
 var mm = require('micromatch')
 var fs = require('fs')
-var HTTPError = require('../HTTPError.js')
-var sort = require('../sort.js')
 
-var sort = require('../sort.js')
-var utils = require('../utils.js')
+var sort = require('../lib/sort.js')
+var utils = require('../lib/utils.js')
 
 var debug = require('debug')('explorer:middlewares:prepareTree')
 

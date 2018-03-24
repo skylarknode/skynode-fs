@@ -1,5 +1,4 @@
 'use strict';
-var utils = require('../utils.js')
 var fs = require('fs')
 
 /**

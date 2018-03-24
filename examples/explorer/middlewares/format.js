@@ -1,7 +1,6 @@
 'use strict';
 var util = require('util')
 var rss = require('../routes/rss.js')
-var HTTPError = require('../HTTPError.js')
 
 /**
  * Handles Accept header to render the wanted format
