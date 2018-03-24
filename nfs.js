@@ -650,7 +650,7 @@ function mkdirSync(path,  opts ) {
  */
 function copydir(from,to,filter ) {
   return new Promise(function (resolve, reject) {
-    copydirp(path, to, filter,function(err,result) {
+    copydirp(from, to, filter,function(err,result) {
         if (err) {
           reject(err);
         } else {
