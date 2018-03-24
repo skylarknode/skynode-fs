@@ -14,6 +14,8 @@ var moment = require('moment');
 var crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const rmdirp = require('rmdirp');
+const copydirp = require('copy-dir');
+
 
 var MODE_0666 = parseInt('0666', 8);
 var MODE_0755 = parseInt('0755', 8);
@@ -646,7 +648,23 @@ function mkdirSync(path,  opts ) {
  * Rmdir -p.
  *
  */
-function rmdir(path ) {
+function copydir(from,to,filter ) {
+  return new Promise(function (resolve, reject) {
+    copydirp(path, to, filter,function(err,result) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+    });
+  });
+}
+
+function copydirSync(from,to,filter ) {
+  return copydir.sync(from, to, filter);
+}
+
+function rmdir(path) {
   return new Promise(function (resolve, reject) {
     rmdirp(path, function(err,result) {
         if (err) {
@@ -742,6 +760,9 @@ module.exports = {
 
   rmdir: rmdir,
   rmdirSync: rmdirSync,
+
+  copydir: copydir,
+  copydirSync: copydirSync,
 
   read: read,
   readSync: readSync,
