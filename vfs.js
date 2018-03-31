@@ -74,11 +74,11 @@ function readDir(path,real, filter) {
 
 
 
-const WebFS = function() {
+const VFS = function() {
     this.initialize.apply(this, arguments);
 };
 
-_.extend(WebFS.prototype,{
+_.extend(VFS.prototype,{
 
     initialize: function(mappedRealFolder,options) {
         options = _.extend({}, options || {});
@@ -430,8 +430,8 @@ _.extend(WebFS.prototype,{
 // EXPORTS
 ///////////////////////////////////////////////////////////////////////////////
 
-module.exports.WebFS = WebFS;
-module.exports.createWebFS = function(rootRealPath) {
-  return new WebFS(rootRealPath);
+module.exports.VFS = VFS;
+module.exports.createVFS = function(rootRealPath) {
+  return new VFS(rootRealPath);
 };
 

@@ -11,7 +11,7 @@ var parallelMiddlewares = require('./lib/utils.js').parallelMiddlewares
 var fs = Promise.promisifyAll(require('fs'));
 var debug = require('debug')('explorer:server');
 
-var webfs = require('../../webfs');
+var vfs = require('../../vfs');
 
 module.exports = function(app) {
   var config = app.get('config');
@@ -20,7 +20,7 @@ module.exports = function(app) {
 
   var homePath = p.join(app.get("root"),config.tree.home);
   app.set("home",homePath);
-  app.set("wfs",webfs.createWebFS(homePath));
+  app.set("wfs",vfs.createVFS(homePath));
 
   let cache = require('./lib/cache')({
     cache : "memory"
