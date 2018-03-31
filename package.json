@@ -8,7 +8,7 @@
   ],
   "name": "skynode-fs",
   "description": "skynode web file system",
-  "main": "./lib/index",
+  "main": "./index",
   "version": "0.9.0",
   "preferGlobal": "true",
   "homepage": "",

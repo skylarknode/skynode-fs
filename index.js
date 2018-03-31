@@ -1,7 +1,7 @@
 const nfs = require("./nfs");
-const webfs = require("./webfs");
+const vfs = require("./vfs");
 
 module.exports = {
 	nfs : nfs,
-	webfs : webfs
+	vfs : vfs
 };
