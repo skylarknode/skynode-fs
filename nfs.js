@@ -126,20 +126,23 @@ var sanitize = function(path) {
      .replace(new RegExp(' {2,}', 'g'), ' ') //double space
 }
 
-/**
- * fs.exists is deprecated
- */
-var exists = function(path) {
-  return new Promise(function(resolve, reject) {
-    fs.access(path, fs.F_OK, function(err) {
-      return resolve(err ? false : true)
-    })
-  })
-}
+var exists = function(path,callback) {
+  function check(next) {
+      fs.access(path, fs.F_OK, function(err) {
+        next(err ? false : true)
+      })
+  }
 
-/**
- * fs.existsSync is deprecated
- */
+  if (callback) {
+    check(callback);
+  } else {
+    return new Promise(function(resolve, reject) {
+      check(resolve);
+    });    
+  }
+};
+
+
 var existsSync = function(path) {
   var exists = false
 
@@ -148,8 +151,8 @@ var existsSync = function(path) {
     exists = true
   } catch(e) {}
 
-  return exists
-}
+  return exists;
+};
 
 /**
  * firstExistingPath
@@ -609,34 +612,58 @@ function createWatch(dir, callback) {
   });
 }
 
-function quoat(path) {
+function quoat(path,callback) {
+  function _quoat() {
+      _diskspace.check(path, (err, result) => {
+        //result.total is how much the drive has totally.
+        //result.used is how much of the drive is reported as used.
+        //result.free is how much free space you have.
+        //result.status isn't really that useful unless you want to debug.
+        callback(err,result);
+      });
+  }
 
-  return new Promise(function (resolve, reject) {
-    _diskspace.check(path, (err, result) => {
-      //result.total is how much the drive has totally.
-      //result.used is how much of the drive is reported as used.
-      //result.free is how much free space you have.
-      //result.status isn't really that useful unless you want to debug.
-      resolve(result);
-    });
-  });
+  if (callback) {
+    _quoat();
+  } else {
+    return new Promise(function (resolve, reject) {
+      callback = function(err,result){
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      }; 
+      _quoat();
+    });    
+  }
 }
 
 /**
  * Mkdir -p.
  *
  */
-function mkdir(path,  opts ) {
+function mkdir(path,  opts ,callback) {
   opts = opts || MODE_0755;
-  return new Promise(function (resolve, reject) {
-    mkdirp(path, opts, function(err,result) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
+  
+  function _mkdir() {
+    mkdirp(path, opts, callback);
+  }
+
+  if (callback) {
+    _mkdir();
+  } else {
+    return new Promise(function (resolve, reject) {
+      callback = function(err,result) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+      };
+      _mkdir();
     });
-  });
+  }
 }
 
 function mkdirSync(path,  opts ) {
@@ -644,61 +671,98 @@ function mkdirSync(path,  opts ) {
   return mkdirp.sync(path, opts);
 }
 
-/**
- * Rmdir -p.
- *
- */
-function copydir(from,to,filter ) {
-  return new Promise(function (resolve, reject) {
-    copydirp(from, to, filter,function(err,result) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
+
+function copydir(from,to,filter,callback ) {
+  function _copydir() {
+    copydirp(from, to, filter,callback);   
+  }
+
+  if (callback) {
+    _copydir();
+  } else {
+    return new Promise(function (resolve, reject) {
+      callback = function(err,result) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+      };
+      _copydir();
     });
-  });
+  }
 }
 
-function copydirSync(from,to,filter ) {
+function copydirSync(from,to,filter) {
   return copydir.sync(from, to, filter);
 }
 
-function rmdir(path) {
-  return new Promise(function (resolve, reject) {
-    rmdirp(path, function(err,result) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
+function rmdir(path,callback) {
+  function _rmdir() {
+    rmdirp(from, to, filter,callback);   
+  }
+
+  if (callback) {
+    _rmdir();
+  } else {
+    return new Promise(function (resolve, reject) {
+      callback = function(err,result) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+      };
+      _rmdir();
     });
-  });
+  }
+      
 }
 
 function rmdirSync(path ) {
   return rmdirp.sync(path);
 }
 
+
 /**
  * Check if the given directory `path` is empty.
  */
 
-function checkEmpty(path, fn) {
-  return new Promise(function (resolve, reject) {
+function checkEmpty(path, callback) {
+  function _checkEmpty() {
     fs.readdir(path, function(err, files) {
         if (err && err.code !== 'ENOENT') {
-          reject(err);
+          callback(err);
         } else {
-          resolve(!files || !files.length);
+          callback(null,!files || !files.length);
         }
-    })
-  });
+    });  
+  }
+
+  if (callback) {
+    _checkEmpty();
+  } else {
+    return new Promise(function (resolve, reject) {
+      callback = function(err,result) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+      };
+      _checkEmpty();
+    });
+  }
+
 }
 
 
-function write(path, str, mode) {
-    return fs.writeFileSync(path, str, { mode: mode || MODE_0666 })
+function write(path, str, mode,callback) {
+    if (callback || typeof mode == "function") {
+      fs.writeFile(path, str, mode,callback);
+    } else {
+      return fs.writeFileAsync(path, str,mode)
+    }
 }
 
 function writeSync(path, str, mode) {
@@ -706,9 +770,15 @@ function writeSync(path, str, mode) {
 }
 
 
-function read(path) {
-    return fs.readFileAsync(path, 'utf8');
+function read(path,callback) {
+    if (callback) {
+      fs.readFile(path, 'utf8',callback);
+    } else {
+      return fs.readFileAsync(path, 'utf8');
+    }
 }
+
+
 function readSync(path) {
     return fs.readFileSync(path, 'utf8');
 }
@@ -726,9 +796,7 @@ module.exports = {
   parallelMiddlewares: parallelMiddlewares,
   pathInfo: pathInfo,
   sha1Hash: sha1Hash,
-  exists: exists,
-  existsSync: existsSync,
-
+  
   DATE_FORMAT : DATE_FORMAT, 
   DEFAULT_STAT : DEFAULT_STAT,
   W_OK : fs.W_OK,
@@ -751,6 +819,9 @@ module.exports = {
 
 
   quoat : quoat,
+
+  exists: exists,
+  existsSync: existsSync,
 
   stat : stat,
   statSync : statSync,
