@@ -128,9 +128,14 @@ var sanitize = function(path) {
 
 var exists = function(path,callback) {
   function check(next) {
-      fs.access(path, fs.F_OK, function(err) {
-        next(err ? false : true)
-      })
+    fs.stat(path, function (err) {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          return callback(null, false);
+        }
+      }
+      callback(err, true);
+    });     
   }
 
   if (callback) {
@@ -144,14 +149,16 @@ var exists = function(path,callback) {
 
 
 var existsSync = function(path) {
-  var exists = false
-
   try {
-    fs.accessSync(path, fs.F_OK)
-    exists = true
-  } catch(e) {}
+    fs.statSync(path);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return false;
+    }
+    throw err;
+  }
 
-  return exists;
+  return true;
 };
 
 /**
@@ -770,17 +777,24 @@ function writeSync(path, str, mode) {
 }
 
 
-function read(path,callback) {
+function read(path,encode,callback) {
+    if (!callback && typeof encode == "function") {
+      callback = encode;
+      encode = null;
+    }
+    encode = encode || 'utf8';
+
     if (callback) {
-      fs.readFile(path, 'utf8',callback);
+      fs.readFile(path, encode,callback);
     } else {
-      return fs.readFileAsync(path, 'utf8');
+      return fs.readFileAsync(path, encode);
     }
 }
 
 
-function readSync(path) {
-    return fs.readFileSync(path, 'utf8');
+function readSync(path,encode) {
+    encode = encode || 'utf8';
+    return fs.readFileSync(path, encode);
 }
 
 module.exports = {
@@ -836,8 +850,12 @@ module.exports = {
   copydirSync: copydirSync,
 
   read: read,
+  readFile : read,
   readSync: readSync,
+  readFileSync: readSync,
 
   write: write,
-  writeSync: writeSync
+  writeFile: write,
+  writeSync: writeSync,
+  writeFileSync: writeSync
 }
