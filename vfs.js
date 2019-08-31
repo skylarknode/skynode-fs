@@ -1,3 +1,3 @@
-var vfs  = require("skynode-vfs");
+const vfs  = require("skynode-vfs");
 
-return vfs;
+module.exports = vfs;

@@ -1,3 +1,3 @@
-var nfs  = require("skynode-nfs");
+const nfs  = require("skynode-nfs");
 
-return nfs;
+module.exports = nfs;
