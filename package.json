@@ -19,8 +19,8 @@
   "scripts": {
   },
   "dependencies": {
-    "skynode-nfs": "https://github.com/skylarknode/skynode-nfs#master",
-    "skynode-vfs": "https://github.com/skylarknode/skynode-vfs#master"    
+    "skynode-nfs": "https://github.com/skylarknode/skynode-nfs",
+    "skynode-vfs": "https://github.com/skylarknode/skynode-vfs"    
   },
 
   "license": "MIT"
