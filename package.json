@@ -22,8 +22,6 @@
     "skynode-nfs": "https://github.com/skylarknode/skynode-nfs#master",
     "skynode-vfs": "https://github.com/skylarknode/skynode-vfs#master"    
   },
-  "engines": {
-    "node": "7"
-  },
+
   "license": "MIT"
 }
